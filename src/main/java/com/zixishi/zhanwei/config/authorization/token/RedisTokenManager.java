@@ -2,8 +2,8 @@ package com.zixishi.zhanwei.config.authorization.token;
 
 
 import com.zixishi.zhanwei.util.Constants;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Component;
@@ -20,21 +20,23 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisTokenManager implements TokenManager {
 
-    private RedisTemplate<Long, String> redis;
 
     @Resource
-    public void setRedis(RedisTemplate redis) {
-        this.redis = redis;
-        //泛型设置成Long后必须更改对应的序列化方案
-        redis.setKeySerializer(new JdkSerializationRedisSerializer());
-    }
+    private RedisTemplate<String, String> stringRedisTemplate;
+
+//    @Resource
+//    public void setRedis(RedisTemplate redis) {
+//        this.redis = redis;
+//        //泛型设置成Long后必须更改对应的序列化方案
+//        redis.setKeySerializer(new JdkSerializationRedisSerializer());
+//    }
 
     public TokenModel createToken(long userId) {
         //使用uuid作为源token
         String token = UUID.randomUUID().toString().replace("-", "");
         TokenModel model = new TokenModel(userId, token);
         //存储到redis并设置过期时间
-        redis.boundValueOps(userId).set(token, Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
+        stringRedisTemplate.boundValueOps(String.valueOf(userId)).set(token, Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
 
         //存入Token中
         /**
@@ -67,16 +69,16 @@ public class RedisTokenManager implements TokenManager {
         if (model == null) {
             return false;
         }
-        String token = redis.boundValueOps(model.getUserId()).get();
+        String token = (String) stringRedisTemplate.boundValueOps(String.valueOf(model.getUserId())).get();
         if (token == null || !token.equals(model.getToken())) {
             return false;
         }
         //如果验证成功，说明此用户进行了一次有效操作，延长token的过期时间
-        redis.boundValueOps(model.getUserId()).expire(Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
+        stringRedisTemplate.boundValueOps(String.valueOf(model.getUserId())).expire(Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
         return true;
     }
 
     public void deleteToken(long userId) {
-        redis.delete(userId);
+        stringRedisTemplate.delete(String.valueOf(userId));
     }
 }

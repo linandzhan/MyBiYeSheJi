@@ -4,4 +4,6 @@ import com.zixishi.zhanwei.model.Account;
 
 public interface AccountService {
     Account findByUsername(String username);
+
+    Account get(long id);
 }
