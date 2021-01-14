@@ -73,12 +73,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 if (this.hasPermission(method,model)) {
                     return true;
                 }else {
-                    throw new Exception("当前用户没有权限访问");
+                    returnJson(response,"{\"code\":400,\"msg\":\"当前用户没有权限访问\"}");
                 }
             }
-            response.setHeader("token错误","您没有登录，无权限访问");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
+            returnJson(response,"{\"code\":400,\"msg\":\"您没有权限访问，请登录\"}");
             return false;
         }
         return true;
@@ -134,6 +132,21 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     }
 
 
+
+    private void returnJson(HttpServletResponse response, String json) throws Exception{
+        PrintWriter writer = null;
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=utf-8");
+        try {
+            writer = response.getWriter();
+            writer.print(json);
+
+        } catch (IOException e) {
+        } finally {
+            if (writer != null)
+                writer.close();
+        }
+    }
 //    private FullHttpResponse writeText(HttpVersion httpVersion, int code, String text) throws IOException {
 //        return this.write(httpVersion, code, text.getBytes(StandardCharsets.UTF_8), "text/plain");
 //    }

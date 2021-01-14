@@ -1,9 +1,11 @@
 package com.zixishi.zhanwei.config.authorization.interceptor;
 
 
+import com.zixishi.zhanwei.config.authorization.resolvers.CurrentUserMethodArgumentResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -12,14 +14,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.List;
 
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Resource
     private Environment environment;
-    private String attachmentHome;
 
+
+    @Resource
+    private CurrentUserMethodArgumentResolver currentUserMethodArgumentResolver;
+    private String attachmentHome;
     @PostConstruct
     public void init() {
         this.attachmentHome = (String) this.environment.getProperty("attachment.home", String.class, "attachment/");
@@ -52,5 +58,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
         //http://localhost:8888/image   /test.jpg
         registry.addResourceHandler("/image/**").addResourceLocations("file:"+attachmentHome);
     }
+
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(currentUserMethodArgumentResolver);
+    }
+
+
+
 
 }

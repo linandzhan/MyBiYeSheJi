@@ -1,6 +1,7 @@
 package com.zixishi.zhanwei.controller;
 
 import com.zixishi.zhanwei.config.authorization.annotation.Authorization;
+import com.zixishi.zhanwei.config.authorization.annotation.CurrentUser;
 import com.zixishi.zhanwei.config.authorization.annotation.RequiredPermission;
 import com.zixishi.zhanwei.config.authorization.token.TokenManager;
 import com.zixishi.zhanwei.config.authorization.token.TokenModel;
@@ -41,6 +42,7 @@ public class AccountController {
             return RestResult.error("密码错误或者账号未注册");
         }
         TokenModel model = tokenManager.createToken(account.getId());
+        model.setToken(account.getId()+"_"+model.getToken());
         return RestResult.success(model);
     }
 
@@ -53,7 +55,7 @@ public class AccountController {
     })
     @PostMapping("/account/logout")
     @RequiredPermission("/account/logout")
-    public RestResult logout(Account user) {
+    public RestResult logout(@CurrentUser Account user) {
         tokenManager.deleteToken(user.getId());
 //        return new ResponseEntity<>(ResultModel.ok(), HttpStatus.OK);
         return RestResult.success("退出成功");
@@ -68,7 +70,8 @@ public class AccountController {
     })
     @RequiredPermission("/account/update")
     @PostMapping("/account/update")
-    public RestResult update(Account user) {
+    public RestResult update(@CurrentUser Account user) {
+        System.out.println(user);
 //        tokenManager.deleteToken(user.getId());
 //        return new ResponseEntity<>(ResultModel.ok(), HttpStatus.OK);
         return RestResult.success("修改成功");
