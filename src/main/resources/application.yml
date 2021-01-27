@@ -13,4 +13,5 @@ spring:
 mybatis:
   mapper-locations: com.zixishi.zhanwei.mapper/*.xml
   type-aliases-package: com.zixishi.zhanwei.model
-
+attachment:
+  home: abc.bca

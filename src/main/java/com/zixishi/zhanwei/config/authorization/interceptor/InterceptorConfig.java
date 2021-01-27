@@ -28,6 +28,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private String attachmentHome;
     @PostConstruct
     public void init() {
+        //上传路径
         this.attachmentHome = (String) this.environment.getProperty("attachment.home", String.class, "attachment/");
         if (this.attachmentHome != null && !this.attachmentHome.endsWith("/")) {
             this.attachmentHome = this.attachmentHome + "/";

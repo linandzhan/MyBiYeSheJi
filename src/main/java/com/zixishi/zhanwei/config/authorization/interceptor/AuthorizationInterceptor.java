@@ -56,6 +56,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
+
+        String requestURI = request.getRequestURI();
+        System.out.println(requestURI);
+
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         //从header中得到token
@@ -70,7 +74,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 request.setAttribute(Constants.CURRENT_USER_ID, model.getUserId());
                 //根据角色查询权限，符合权限的放行
                 // 验证权限
-                if (this.hasPermission(method,model)) {
+                if (this.hasPermission(request,method,model)) {
                     return true;
                 }else {
                     returnJson(response,"{\"code\":400,\"msg\":\"当前用户没有权限访问\"}");
@@ -90,7 +94,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     /**
      * 是否有权限
      */
-    private boolean hasPermission(Method method,TokenModel model) {
+    private boolean hasPermission(HttpServletRequest request,Method method,TokenModel model) {
 
 //            // 获取方法上的注解
             RequiredPermission requiredPermission = method.getAnnotation(RequiredPermission.class);
@@ -102,9 +106,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             if (requiredPermission == null) {
                 return true;
             }
+
             // 如果标记了注解，则判断权限
             if (StringUtils.isNotBlank(requiredPermission.value())) {
-                String path = requiredPermission.value();
+                String path = request.getRequestURI();
                 Boolean free = permissionService.findByPath(path);
                 if(free) {
                     //对所有开放
