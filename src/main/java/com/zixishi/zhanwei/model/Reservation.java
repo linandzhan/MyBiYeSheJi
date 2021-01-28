@@ -24,4 +24,8 @@ public class Reservation {
     private Area area;
 
     private Seat seat;
+    /**
+     * 哪个用户预约的
+     */
+    private User user;
 }

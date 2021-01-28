@@ -5,7 +5,11 @@ import com.zixishi.zhanwei.config.authorization.annotation.CurrentUser;
 import com.zixishi.zhanwei.config.authorization.annotation.RequiredPermission;
 import com.zixishi.zhanwei.config.authorization.token.TokenManager;
 import com.zixishi.zhanwei.config.authorization.token.TokenModel;
+import com.zixishi.zhanwei.mapper.AreaMapper;
+import com.zixishi.zhanwei.mapper.PackageMapper;
 import com.zixishi.zhanwei.model.Account;
+import com.zixishi.zhanwei.model.Area;
+import com.zixishi.zhanwei.model.Package;
 import com.zixishi.zhanwei.service.AccountService;
 import com.zixishi.zhanwei.util.RestResult;
 import io.swagger.annotations.Api;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @Api(tags = "账号管理")
@@ -27,6 +32,10 @@ public class AccountController {
     private AccountService accountService;
     @Resource
     private TokenManager tokenManager;
+    @Resource
+    private AreaMapper areaMapper;
+    @Resource
+    private PackageMapper packageMapper;
 
 
     @ApiOperation(value = "用户登录接口")
@@ -118,6 +127,19 @@ public class AccountController {
 //        return new ResponseEntity<>(ResultModel.ok(), HttpStatus.OK);
         return RestResult.success("搜索成功");
     }
+
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+//    })
+    @PostMapping("/account/testMapper")
+     public RestResult testAreaMapper() {
+         Area area = areaMapper.findOne(1l);
+         System.out.println(area);
+        Package aPackage = packageMapper.findOne(1l);
+        List<Area> areas = areaMapper.findAreaListByPackage(aPackage.getId());
+        aPackage.setAreaList(areas);
+        return RestResult.success(aPackage);
+     }
 
 
 }

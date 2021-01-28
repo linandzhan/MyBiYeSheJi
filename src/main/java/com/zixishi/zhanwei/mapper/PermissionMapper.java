@@ -1,7 +1,9 @@
 package com.zixishi.zhanwei.mapper;
 
-import java.util.Set;
+import org.mapstruct.Mapper;
 
+import java.util.Set;
+@Mapper
 public interface PermissionMapper {
     Boolean findByPath(String path);
 

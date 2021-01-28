@@ -12,6 +12,11 @@ spring:
     port: 6379
 mybatis:
   mapper-locations: com.zixishi.zhanwei.mapper/*.xml
+  ### 别名配置
   type-aliases-package: com.zixishi.zhanwei.model
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    ### 驼峰命名配置
+    map-underscore-to-camel-case: true
 attachment:
   home: abc.bca

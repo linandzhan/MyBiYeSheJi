@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 // 标注这个注解的注解保留时期
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiredPermission {
-    String value();
+    String value() default "path";
 }
