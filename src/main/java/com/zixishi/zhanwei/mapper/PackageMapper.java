@@ -2,7 +2,7 @@ package com.zixishi.zhanwei.mapper;
 
 import com.zixishi.zhanwei.model.Area;
 import com.zixishi.zhanwei.model.Package;
-import org.mapstruct.Mapper;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 

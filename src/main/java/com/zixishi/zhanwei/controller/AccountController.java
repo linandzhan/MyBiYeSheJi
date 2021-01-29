@@ -51,6 +51,8 @@ public class AccountController {
             return RestResult.error("密码错误或者账号未注册");
         }
         TokenModel model = tokenManager.createToken(account.getId());
+
+
         model.setToken(account.getId()+"_"+model.getToken());
         return RestResult.success(model);
     }

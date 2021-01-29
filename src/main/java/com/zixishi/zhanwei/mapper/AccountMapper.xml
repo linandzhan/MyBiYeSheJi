@@ -4,11 +4,11 @@
 
 
 
-    <select id="findOne" resultType="com.zixishi.zhanwei.model.Account">
+    <select id="findOne" resultType="account">
             select * from account where id = #{id};
      </select>
 
-    <select id="findByUsername" resultType="com.zixishi.zhanwei.model.Account">
+    <select id="findByUsername" resultType="account">
             select * from account where username = #{username};
      </select>
 </mapper>

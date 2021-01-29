@@ -1,14 +1,19 @@
 package com.zixishi.zhanwei.config.authorization.token;
 
 
+import com.zixishi.zhanwei.mapper.TokenMapper;
+import com.zixishi.zhanwei.model.Account;
+import com.zixishi.zhanwei.model.Token;
 import com.zixishi.zhanwei.util.Constants;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +24,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisTokenManager implements TokenManager {
-
+    @Resource
+    private TokenMapper tokenMapper;
 
     @Resource
     private RedisTemplate<String, String> stringRedisTemplate;
@@ -38,7 +44,24 @@ public class RedisTokenManager implements TokenManager {
         //存储到redis并设置过期时间
         stringRedisTemplate.boundValueOps(String.valueOf(userId)).set(token, Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
 
+
         //存入Token中
+        Token t = new Token();
+        if(tokenMapper.countByAccount(userId) == 0) {
+            t.setToken(token);
+            t.setCreateTime(LocalDateTime.now());
+            Account account = new Account();
+            account.setId(userId);
+            t.setAccount(account);
+            Long save = tokenMapper.save(t);
+            System.out.println(save);
+        }else {
+            Long tokenId = tokenMapper.findIdByAccount(userId);
+            t.setToken(token);
+            t.setId(tokenId);
+            t.setCreateTime(LocalDateTime.now());
+            tokenMapper.update(t);
+        }
         /**
          *
          * if(tokenMapper.findByToken(token) == null) {
