@@ -7,22 +7,22 @@ package com.zixishi.zhanwei.config.authorization.token;
 public class TokenModel {
 
     //用户id
-    private long userId;
+    private long id;
 
     //随机生成的uuid
     private String token;
 
-    public TokenModel(long userId, String token) {
-        this.userId = userId;
+    public TokenModel(long id, String token) {
+        this.id = id;
         this.token = token;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getId() {
+        return id;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getToken() {

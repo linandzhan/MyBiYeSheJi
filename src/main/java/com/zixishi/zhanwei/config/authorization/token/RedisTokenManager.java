@@ -62,15 +62,7 @@ public class RedisTokenManager implements TokenManager {
             t.setCreateTime(LocalDateTime.now());
             tokenMapper.update(t);
         }
-        /**
-         *
-         * if(tokenMapper.findByToken(token) == null) {
-         *      tokenMapper.save();
-         * }else {
-         *     tokenMapper.update()
-         * }
-         *
-         */
+
         return model;
     }
 
@@ -78,13 +70,14 @@ public class RedisTokenManager implements TokenManager {
         if (authentication == null || authentication.length() == 0) {
             return null;
         }
-        String[] param = authentication.split("_");
-        if (param.length != 2) {
-            return null;
-        }
+//        String[] param = authentication.split("_");
+//        if (param.length != 2) {
+//            return null;
+//        }
         //使用userId和源token简单拼接成的token，可以增加加密措施
-        long userId = Long.parseLong(param[0]);
-        String token = param[1];
+        String token = authentication;
+        long userId = tokenMapper.findAccountByToken(token);
+
         return new TokenModel(userId, token);
     }
 
@@ -92,16 +85,18 @@ public class RedisTokenManager implements TokenManager {
         if (model == null) {
             return false;
         }
-        String token = (String) stringRedisTemplate.boundValueOps(String.valueOf(model.getUserId())).get();
+        String token = (String) stringRedisTemplate.boundValueOps(String.valueOf(model.getId())).get();
         if (token == null || !token.equals(model.getToken())) {
             return false;
         }
         //如果验证成功，说明此用户进行了一次有效操作，延长token的过期时间
-        stringRedisTemplate.boundValueOps(String.valueOf(model.getUserId())).expire(Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
+        stringRedisTemplate.boundValueOps(String.valueOf(model.getId())).expire(Constants.TOKEN_EXPIRES_HOUR, TimeUnit.HOURS);
         return true;
     }
 
     public void deleteToken(long userId) {
         stringRedisTemplate.delete(String.valueOf(userId));
+        //按道理不应该根据account_id删除token,因为小程序和app可以同时登录的。这样已删除就一起删除掉了
+        tokenMapper.deleteToken(userId);
     }
 }

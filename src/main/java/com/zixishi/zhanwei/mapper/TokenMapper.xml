@@ -66,6 +66,12 @@
     </select>
 
 
+    <select id="findAccountByToken" resultType="Long">
+        select account_id from token where token = #{token}
+    </select>
+
+
+
     <update id="update" parameterType="token">
         update token
         <set>
@@ -81,4 +87,10 @@
         </set>
         where id = #{id}
     </update>
+
+
+
+    <delete id="deleteToken" parameterType="long">
+        delete from token where account_id = #{accountId}
+    </delete>
 </mapper>

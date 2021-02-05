@@ -71,7 +71,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         if (method.getAnnotation(Authorization.class) != null) {
             if (manager.checkToken(model)) {
                 //如果token验证成功，将token对应的用户id存在request中，便于之后注入
-                request.setAttribute(Constants.CURRENT_USER_ID, model.getUserId());
+                request.setAttribute(Constants.CURRENT_USER_ID, model.getId());
                 //根据角色查询权限，符合权限的放行
                 // 验证权限
                 if (this.hasPermission(request,method,model)) {
@@ -116,7 +116,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                     return true;
                 }
 
-                long id = model.getUserId();
+                long id = model.getId();
                 Set<String> permissionSet = permissionService.findByUser(id);
                 if(CollectionUtils.isEmpty(permissionSet)) {
                     return  false;

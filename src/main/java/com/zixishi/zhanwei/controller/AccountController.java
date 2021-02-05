@@ -11,13 +11,16 @@ import com.zixishi.zhanwei.model.Account;
 import com.zixishi.zhanwei.model.Area;
 import com.zixishi.zhanwei.model.Package;
 import com.zixishi.zhanwei.service.AccountService;
+import com.zixishi.zhanwei.util.Constants;
 import com.zixishi.zhanwei.util.RestResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.catalina.connector.Request;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -41,19 +44,15 @@ public class AccountController {
     @ApiOperation(value = "用户登录接口")
     @ApiImplicitParams({ @ApiImplicitParam(name = "username", value = "登录名"), @ApiImplicitParam(name = "password", value = "密码", required = true)})
     @PostMapping("/account/login")
-    public RestResult login(String username,String password) {
+    public RestResult login( String username,String password) {
         Assert.notNull(username, "username can not be empty");
         Assert.notNull(password, "password can not be empty");
-
         Account account = accountService.findByUsername(username);
-
         if(account == null && !account.getPassword().equals(password)) {
             return RestResult.error("密码错误或者账号未注册");
         }
         TokenModel model = tokenManager.createToken(account.getId());
 
-
-        model.setToken(account.getId()+"_"+model.getToken());
         return RestResult.success(model);
     }
 
@@ -68,8 +67,14 @@ public class AccountController {
     @RequiredPermission("/account/logout")
     public RestResult logout(@CurrentUser Account user) {
         tokenManager.deleteToken(user.getId());
-//        return new ResponseEntity<>(ResultModel.ok(), HttpStatus.OK);
         return RestResult.success("退出成功");
+    }
+
+
+    @PostMapping("/account/getAccount")
+    @Authorization
+    public RestResult getAccount(@CurrentUser Account user) {
+        return RestResult.success(user);
     }
 
 
@@ -130,9 +135,7 @@ public class AccountController {
         return RestResult.success("搜索成功");
     }
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
-//    })
+
     @PostMapping("/account/testMapper")
      public RestResult testAreaMapper() {
          Area area = areaMapper.findOne(1l);
