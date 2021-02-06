@@ -5,6 +5,7 @@ import com.zixishi.zhanwei.config.authorization.annotation.CurrentUser;
 import com.zixishi.zhanwei.config.authorization.annotation.RequiredPermission;
 import com.zixishi.zhanwei.config.authorization.token.TokenManager;
 import com.zixishi.zhanwei.config.authorization.token.TokenModel;
+import com.zixishi.zhanwei.dto.LoginDTO;
 import com.zixishi.zhanwei.mapper.AreaMapper;
 import com.zixishi.zhanwei.mapper.PackageMapper;
 import com.zixishi.zhanwei.model.Account;
@@ -52,8 +53,11 @@ public class AccountController {
             return RestResult.error("密码错误或者账号未注册");
         }
         TokenModel model = tokenManager.createToken(account.getId());
-
-        return RestResult.success(model);
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setId(model.getId());
+        loginDTO.setToken(model.getToken());
+        loginDTO.setUsername(username);
+        return RestResult.success(loginDTO);
     }
 
 
