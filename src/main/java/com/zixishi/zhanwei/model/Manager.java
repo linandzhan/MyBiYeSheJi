@@ -9,7 +9,7 @@ public class Manager {
 
     private Long id;
 
-    private String name;
+    private String username;
 
 
     private LocalDateTime createTime;

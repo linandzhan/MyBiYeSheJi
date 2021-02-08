@@ -49,7 +49,7 @@ public class AccountController {
         Assert.notNull(username, "username can not be empty");
         Assert.notNull(password, "password can not be empty");
         Account account = accountService.findByUsername(username);
-        if(account == null && !account.getPassword().equals(password)) {
+        if(account != null && !account.getPassword().equals(password)) {
             return RestResult.error("密码错误或者账号未注册");
         }
         TokenModel model = tokenManager.createToken(account.getId());

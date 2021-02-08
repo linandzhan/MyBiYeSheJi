@@ -3,7 +3,7 @@
 <mapper namespace="com.zixishi.zhanwei.mapper.ManagerMapper">
     <resultMap id="managerMap" type="manager">
         <id property="id" column="id"/>
-        <result property="name" column="name"/>
+        <result property="username" column="username"/>
         <result property="createTime" column="create_time"/>
         <result property="phone" column="phone"/>
         <result property="enabled" column="enabled"/>
