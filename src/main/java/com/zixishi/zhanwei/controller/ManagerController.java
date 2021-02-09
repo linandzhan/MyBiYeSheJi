@@ -7,6 +7,7 @@ import com.zixishi.zhanwei.config.authorization.annotation.Authorization;
 import com.zixishi.zhanwei.config.authorization.annotation.RequiredPermission;
 import com.zixishi.zhanwei.mapper.ManagerMapper;
 import com.zixishi.zhanwei.model.Manager;
+import com.zixishi.zhanwei.service.ManagerService;
 import com.zixishi.zhanwei.util.Pageable;
 import com.zixishi.zhanwei.util.RestResult;
 import io.swagger.annotations.Api;
@@ -28,22 +29,23 @@ import java.util.List;
 public class ManagerController {
     @Resource
     private ManagerMapper managerMapper;
-
+    @Resource
+    private ManagerService managerService;
     /**
      * 批量删除
      * @param
      */
     @Authorization
-    @ApiOperation(value = "批量修改管理员账号")
+    @ApiOperation(value = "批量启用管理员账号")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
     })
     @PostMapping("/manager/batchEnabled")
-    public void batchEnabled() {
-        List<Long> idList = new ArrayList<>();
-        idList.add(2L);
-        idList.add(3L);
+    @RequiredPermission("/manager/batchEnabled")
+    public RestResult batchEnabled(@RequestBody List<Long> idList) {
+        System.out.println(idList);
         managerMapper.batchEnabled(idList);
+        return RestResult.success("启用成功");
     }
 
     @Authorization
@@ -60,14 +62,44 @@ public class ManagerController {
         Boolean enabled = (Boolean) manager.get("enabled");
         m.setUsername(username);
         m.setEnabled(enabled);
-
+        Long roleId = null;
         Integer id = (Integer) jsonObject.get("roleId");
-        Long roleId = Long.parseLong(id.toString());
+        if(id != null) {
+            roleId = Long.parseLong(id.toString());
+        }
+
 
         LinkedHashMap pageable = (LinkedHashMap) jsonObject.get("pageable");
         Pageable p = new Pageable();
         p.setPage((Integer) pageable.get("page"));
         p.setSize((Integer) pageable.get("size"));
-        return null;
+
+        return managerService.search(roleId,m,p);
+    }
+
+
+
+    @Authorization
+    @ApiOperation(value = "管理员禁用")
+    @RequiredPermission("/manager/disable")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+    })
+    @PostMapping("/manager/disable")
+    public RestResult disable(Long id) {
+        managerMapper.disable(id);
+        return RestResult.success("禁用成功");
+    }
+
+    @Authorization
+    @ApiOperation(value = "管理员禁用")
+    @RequiredPermission("/manager/enable")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+    })
+    @PostMapping("/manager/enable")
+    public RestResult enable(Long id) {
+        managerMapper.enable(id);
+        return RestResult.success("启用成功");
     }
 }

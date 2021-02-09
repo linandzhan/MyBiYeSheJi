@@ -13,4 +13,12 @@
     <select id="findByPath" resultType="java.lang.Boolean">
             select free from permission where path = #{path};
      </select>
+
+    <select id="searchPath" resultType="string">
+        select path from permission
+    </select>
+
+    <insert id="save">
+        insert into permission (id,path,free) values (null,#{path},1)
+    </insert>
 </mapper>

@@ -20,4 +20,50 @@
             </foreach>
             )
     </update>
+<!--    禁用管理员账号-->
+    <update id="disable" parameterType="long">
+        update manager set enabled = false where id = #{id}
+    </update>
+<!--    启用管理员账号-->
+    <update id="enable" parameterType="long">
+        update manager set enabled = true where id = #{id}
+    </update>
+
+<!--    模糊查询，搜索管理员列表-->
+<!--    id in (SELECT id FROM `account` where role = (select rolename from role where id=#{roleId}))-->
+    <select id="search" resultMap="managerMap">
+        select * from manager
+        <where>
+            <choose>
+                <when test="roleId != null and roleId != ''">
+                    id  in (SELECT id FROM `account` where role = (select rolename from role where id=#{roleId}))
+                </when>
+            </choose>
+        <if test="manager.username != null and manager.username != ''">
+            <bind name="pattern" value="'%' + manager.username + '%'"/>
+            and username like #{pattern}
+        </if>
+        <if test="manager.enabled != null">
+            and enabled = #{manager.enabled}
+        </if>
+        </where>
+    </select>
+
+    <select id="count" resultType="long">
+        select count(1) from manager
+        <where>
+            <choose>
+                <when test="roleId != null and roleId != ''">
+                    id  in (SELECT id FROM `account` where role = (select rolename from role where id=#{roleId}))
+                </when>
+            </choose>
+            <if test="manager.username != null and manager.username != ''">
+                <bind name="pattern" value="'%' + manager.username + '%'"/>
+                and username like #{pattern}
+            </if>
+            <if test="manager.enabled != null">
+                and enabled = #{manager.enabled}
+            </if>
+        </where>
+    </select>
 </mapper>

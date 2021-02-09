@@ -139,6 +139,14 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.74</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-core获取类信息 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.0.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
