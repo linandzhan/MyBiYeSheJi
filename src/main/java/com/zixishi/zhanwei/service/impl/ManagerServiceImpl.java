@@ -10,7 +10,10 @@ import com.zixishi.zhanwei.util.RestResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Handler;
 
 @Service
 public class ManagerServiceImpl implements ManagerService {
@@ -31,4 +34,13 @@ public class ManagerServiceImpl implements ManagerService {
         listDTO.setTotal(total);
         return RestResult.success(listDTO);
     }
+
+    @Override
+    public void save(Manager manager) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("manager",manager);
+        managerMapper.save(map);
+    }
+
+
 }

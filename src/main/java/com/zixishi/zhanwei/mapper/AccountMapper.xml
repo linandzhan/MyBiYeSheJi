@@ -11,4 +11,64 @@
     <select id="findByUsername" resultType="account">
             select * from account where username = #{username};
      </select>
+
+
+
+    <insert id="save" parameterType="account">
+        insert into account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="username != null">
+                #{username},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+        </trim>
+        <selectKey resultType="Long" order="AFTER" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+
+    <insert id="bind">
+        insert into account_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="account != null">
+            account_id,
+        </if>
+        <if test="role != null">
+            role_id,
+        </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="account != null">
+            #{account.id},
+        </if>
+        <if test="role != null">
+            #{role.id},
+        </if>
+        </trim>
+    </insert>
 </mapper>

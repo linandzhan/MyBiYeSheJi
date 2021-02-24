@@ -19,4 +19,4 @@ mybatis:
     ### 驼峰命名配置
     map-underscore-to-camel-case: true
 attachment:
-  home: abc.bca
+  home: D:/myproject/MyBiYeSheJi2/src/main/java/com/zixishi/zhanwei/config/image

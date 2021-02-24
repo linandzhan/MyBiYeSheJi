@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+
 @Mapper
 public interface ManagerMapper {
     void batchEnabled(@Param(value = "idList") List<Long> idList);
@@ -17,4 +19,10 @@ public interface ManagerMapper {
     void disable(Long id);
 
     void enable(Long id);
+
+    void batchDisabled(@Param(value = "idList") List<Long> idList);
+
+    Manager get(Long id);
+
+    void save(Map map);
 }

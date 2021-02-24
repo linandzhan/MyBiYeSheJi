@@ -6,4 +6,6 @@ public interface AccountService {
     Account findByUsername(String username);
 
     Account get(long id);
+
+    Long save(Account account);
 }

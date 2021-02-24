@@ -23,4 +23,8 @@ public class Manager {
     private Boolean enabled;
 
     private String avator;
+
+    private String description;
+
+
 }

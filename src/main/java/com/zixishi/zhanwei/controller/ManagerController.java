@@ -3,10 +3,14 @@ package com.zixishi.zhanwei.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.zixishi.zhanwei.config.authorization.annotation.Authorization;
 import com.zixishi.zhanwei.config.authorization.annotation.RequiredPermission;
+import com.zixishi.zhanwei.mapper.AccountMapper;
 import com.zixishi.zhanwei.mapper.ManagerMapper;
+import com.zixishi.zhanwei.model.Account;
 import com.zixishi.zhanwei.model.Manager;
+import com.zixishi.zhanwei.service.AccountService;
 import com.zixishi.zhanwei.service.ManagerService;
 import com.zixishi.zhanwei.util.Pageable;
 import com.zixishi.zhanwei.util.RestResult;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,8 +36,30 @@ public class ManagerController {
     private ManagerMapper managerMapper;
     @Resource
     private ManagerService managerService;
+    @Resource
+    private AccountService accountService;
+
     /**
-     * 批量删除
+     * 获取单个Manager信息
+     * @return
+     */
+    @Authorization
+    @ApiOperation(value = "获取单个Manager信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+    })
+    @PostMapping("/manager/get")
+    @RequiredPermission("/manager/get")
+    public  RestResult get(@RequestBody  JSONObject jsonObject) {
+        String str = (String) jsonObject.get("id");
+        Long id = Long.parseLong(str);
+        Manager manager = managerMapper.get(id);
+        return RestResult.success(manager);
+    }
+
+
+    /**
+     * 批量启用
      * @param
      */
     @Authorization
@@ -43,9 +70,26 @@ public class ManagerController {
     @PostMapping("/manager/batchEnabled")
     @RequiredPermission("/manager/batchEnabled")
     public RestResult batchEnabled(@RequestBody List<Long> idList) {
-        System.out.println(idList);
         managerMapper.batchEnabled(idList);
         return RestResult.success("启用成功");
+    }
+
+
+
+    /**
+     * 批量禁用
+     * @param
+     */
+    @Authorization
+    @ApiOperation(value = "批量禁用管理员账号")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+    })
+    @PostMapping("/manager/batchDisabled")
+    @RequiredPermission("/manager/batchDisabled")
+    public RestResult batchDisabled(@RequestBody List<Long> idList) {
+        managerMapper.batchDisabled(idList);
+        return RestResult.success("禁用成功");
     }
 
     @Authorization
@@ -101,5 +145,48 @@ public class ManagerController {
     public RestResult enable(Long id) {
         managerMapper.enable(id);
         return RestResult.success("启用成功");
+    }
+
+
+    @Authorization
+    @ApiOperation(value = "新增管理员")
+    @RequiredPermission("/manager/save")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header"),
+    })
+    @PostMapping("/manager/save")
+    public RestResult save(@RequestBody JSONObject jsonObject) {
+        System.out.println(jsonObject);
+        LinkedHashMap managerValue = (LinkedHashMap) jsonObject.get("manager");
+        Account account = new Account();
+        Manager manager = new Manager();
+        String username = (String) managerValue.get("username");
+        String password = (String) managerValue.get("password");
+        String phone = (String)managerValue.get("phone");
+        String description = (String)managerValue.get("description");
+        String avatar = (String)managerValue.get("avator");
+        if(username != null) {
+            account.setUsername(username);
+            manager.setUsername(username);
+        }
+        if(password != null) {
+            account.setPassword(password);
+        }
+        if(phone != null) {
+            account.setPhone(phone);
+            manager.setPhone(phone);
+        }
+        if(description != null) {
+            manager.setDescription(description);
+        }
+        if(avatar != null) {
+            manager.setAvator(avatar);
+        }
+        accountService.save(account);
+        manager.setId(account.getId());
+        manager.setCreateTime(LocalDateTime.now());
+        manager.setEnabled(true);
+        managerService.save(manager);
+        return RestResult.success("新增用户成功");
     }
 }

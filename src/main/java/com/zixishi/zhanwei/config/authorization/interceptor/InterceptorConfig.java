@@ -25,15 +25,17 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     @Resource
     private CurrentUserMethodArgumentResolver currentUserMethodArgumentResolver;
-    private String attachmentHome;
-    @PostConstruct
-    public void init() {
-        //上传路径
-        this.attachmentHome = (String) this.environment.getProperty("attachment.home", String.class, "attachment/");
-        if (this.attachmentHome != null && !this.attachmentHome.endsWith("/")) {
-            this.attachmentHome = this.attachmentHome + "/";
-        }
-    }
+//    private String attachmentHome;
+//    @PostConstruct
+//    public void init() {
+//        //上传路径
+//        this.attachmentHome = (String) this.environment.getProperty("attachment.home", String.class, "attachment/");
+//        System.out.println(attachmentHome);
+//        if (this.attachmentHome != null && !this.attachmentHome.endsWith("/")) {
+//            attachmentHome = attachmentHome.replace(".", "/");
+//            System.out.println(attachmentHome);
+//        }
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -57,7 +59,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         //http://localhost:8888/image   /test.jpg
-        registry.addResourceHandler("/image/**").addResourceLocations("file:"+attachmentHome);
+        registry.addResourceHandler("/attachment/**").addResourceLocations("file:"+ "D:/myproject/MyBiYeSheJi2/src/main/java/com/zixishi/zhanwei/config/image/");
     }
 
 
